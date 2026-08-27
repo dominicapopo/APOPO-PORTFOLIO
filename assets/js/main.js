@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cursorDot = document.getElementById('cursorDot');
   const cursorFollower = document.getElementById('cursorFollower');
 
-  if (cursorDot && cursorFollower && window.innerWidth >= 992) {
+  if (cursorDot && cursorFollower && window.matchMedia('(hover: hover) and (pointer: fine)').matches && !reduceMotion) {
     let mouseX = -100;
     let mouseY = -100;
     let followerX = -100;
@@ -46,6 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
         cursorDot.style.opacity = '1';
         cursorFollower.style.opacity = '1';
       }
+    }, { passive: true });
+
+    document.addEventListener('mouseleave', () => {
+      isVisible = false;
+      cursorDot.style.opacity = '0';
+      cursorFollower.style.opacity = '0';
     });
 
     function renderCursor() {
@@ -65,9 +71,27 @@ document.addEventListener('DOMContentLoaded', () => {
     interactiveElements.forEach(el => {
       el.addEventListener('mouseenter', () => {
         cursorFollower.classList.add('hovering');
+        const isProject = el.classList.contains('project-card');
+        cursorFollower.classList.toggle('has-label', isProject);
+        cursorFollower.textContent = isProject ? 'VIEW' : '';
       });
       el.addEventListener('mouseleave', () => {
         cursorFollower.classList.remove('hovering');
+        cursorFollower.classList.remove('has-label');
+        cursorFollower.textContent = '';
+      });
+    });
+
+    // Magnetic movement is intentionally limited to compact controls.
+    document.querySelectorAll('.hero-ctas .btn, .theme-toggle, .back-to-top').forEach(el => {
+      el.addEventListener('mousemove', event => {
+        const rect = el.getBoundingClientRect();
+        const x = (event.clientX - rect.left - rect.width / 2) * 0.18;
+        const y = (event.clientY - rect.top - rect.height / 2) * 0.18;
+        if (typeof gsap !== 'undefined') gsap.to(el, { x, y, duration: 0.25, ease: 'power2.out', overwrite: true });
+      });
+      el.addEventListener('mouseleave', () => {
+        if (typeof gsap !== 'undefined') gsap.to(el, { x: 0, y: 0, duration: 0.45, ease: 'elastic.out(1, 0.45)', overwrite: true });
       });
     });
   }
@@ -184,11 +208,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!reduceMotion && typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
 
-    // Hero Section Reveal Animation (Safe fromTo)
-    gsap.fromTo('.hero-portrait-card', 
-      { opacity: 0.2, y: 20, scale: 0.96 },
-      { opacity: 1, y: 0, scale: 1, duration: 1, ease: "power2.out", clearProps: "transform,opacity" }
-    );
+    const heroTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    heroTimeline
+      .fromTo('.hero-badge', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .55 })
+      .fromTo('.hero-intro, .hero-title', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .8, stagger: .1 }, '-=.25')
+      .fromTo('.hero-role-subtitle, .typewriter-container, .hero-description, .hero-motto', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .65, stagger: .08 }, '-=.45')
+      .fromTo('.hero-ctas .btn', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .5, stagger: .1 }, '-=.35')
+      .fromTo('.hero-portrait-card', { opacity: 0, x: 38, scale: .94 }, { opacity: 1, x: 0, scale: 1, duration: 1 }, '-=.9');
+
+    gsap.to('.hero-portrait-img', {
+      yPercent: 5,
+      ease: 'none',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: .8 }
+    });
 
     // Section Headers Reveal
     gsap.utils.toArray('.section-tag, .section-title, .section-subtitle').forEach(el => {
@@ -197,36 +229,56 @@ document.addEventListener('DOMContentLoaded', () => {
         {
           scrollTrigger: {
             trigger: el,
-            start: "top 90%",
+            start: "top 88%",
             once: true
           },
           opacity: 1,
           y: 0,
-          duration: 0.7,
-          ease: "power2.out",
+          duration: 0.75,
+          ease: "power3.out",
           clearProps: "transform,opacity"
         }
       );
     });
 
     // Glass & Service Cards Reveal
-    gsap.utils.toArray('.services-grid, .about-grid, .stats-grid, .projects-grid, .edu-grid').forEach(grid => {
+    gsap.utils.toArray('.services-grid, .about-grid, .stats-grid, .projects-grid, .edu-grid, .skills-matrix-grid, .approach-pipeline').forEach(grid => {
       gsap.fromTo(grid.children, 
         { opacity: 0.3, y: 30 },
         {
           scrollTrigger: {
             trigger: grid,
-            start: "top 90%",
+            start: "top 86%",
             once: true
           },
           opacity: 1,
           y: 0,
-          stagger: 0.12,
-          duration: 0.7,
-          ease: "power2.out",
+          stagger: 0.09,
+          duration: 0.72,
+          ease: "power3.out",
           clearProps: "transform,opacity"
         }
       );
+    });
+
+    gsap.utils.toArray('.timeline-item').forEach((item, index) => {
+      gsap.fromTo(item,
+        { opacity: 0, x: index % 2 === 0 ? -34 : 34 },
+        { opacity: 1, x: 0, duration: .75, ease: 'power3.out', clearProps: 'transform,opacity', scrollTrigger: { trigger: item, start: 'top 84%', once: true } }
+      );
+    });
+
+    const timeline = document.querySelector('.timeline');
+    if (timeline) {
+      gsap.to(timeline, {
+        '--timeline-progress': 1,
+        ease: 'none',
+        scrollTrigger: { trigger: timeline, start: 'top 75%', end: 'bottom 65%', scrub: true }
+      });
+    }
+
+    gsap.utils.toArray('.project-img').forEach(image => {
+      gsap.fromTo(image, { scale: 1.06 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: image, start: 'top bottom', end: 'bottom top', scrub: .6 } });
     });
   }
 
