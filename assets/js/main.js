@@ -5,6 +5,23 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Theme preference with an accessible toggle.
+  const themeToggle = document.getElementById('themeToggle');
+  const applyTheme = (theme) => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('portfolio-theme', theme);
+    const isDark = theme === 'dark';
+    if (themeToggle) {
+      themeToggle.innerHTML = `<i class="fas fa-${isDark ? 'sun' : 'moon'}" aria-hidden="true"></i>`;
+      themeToggle.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} theme`);
+    }
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#080b12' : '#f5f8fc');
+  };
+  applyTheme(document.documentElement.dataset.theme || 'dark');
+  themeToggle?.addEventListener('click', () => applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
+
   // --------------------------------------------------------------------------
   // 1. Safe Custom Interactive Mouse Cursor (Only Active on Mouse Move)
   // --------------------------------------------------------------------------
@@ -97,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  typeEffect();
+  if (!reduceMotion) typeEffect();
 
   // --------------------------------------------------------------------------
   // 3. Navbar Glass Scroll & Active Link Spy
@@ -148,12 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
       navLinksContainer.classList.toggle('active');
       const isOpen = navLinksContainer.classList.contains('active');
       burgerMenu.innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+      burgerMenu.setAttribute('aria-expanded', String(isOpen));
+      burgerMenu.setAttribute('aria-label', `${isOpen ? 'Close' : 'Open'} navigation menu`);
     });
 
     navLinks.forEach(link => {
       link.addEventListener('click', () => {
         navLinksContainer.classList.remove('active');
         burgerMenu.innerHTML = '<i class="fas fa-bars"></i>';
+        burgerMenu.setAttribute('aria-expanded', 'false');
       });
     });
   }
@@ -161,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
   // 4. Safe Non-Destructive GSAP & ScrollTrigger Animations
   // --------------------------------------------------------------------------
-  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+  if (!reduceMotion && typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
 
     // Hero Section Reveal Animation (Safe fromTo)
@@ -217,9 +237,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const skillCards = document.querySelectorAll('.skill-card');
 
   skillTabBtns.forEach(btn => {
+    btn.setAttribute('aria-pressed', String(btn.classList.contains('active')));
     btn.addEventListener('click', () => {
-      skillTabBtns.forEach(b => b.classList.remove('active'));
+      skillTabBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
       btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
 
       const filterCategory = btn.getAttribute('data-filter');
 
@@ -234,6 +259,48 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+
+  // Project case studies use only information already present in each card.
+  const caseStudyModal = document.getElementById('caseStudyModal');
+  const caseStudyClose = document.getElementById('modalClose');
+  document.querySelectorAll('.project-card').forEach((card) => {
+    let button = card.querySelector('.case-study-btn');
+    if (!button) {
+      button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-secondary case-study-btn';
+      button.innerHTML = '<i class="fas fa-layer-group" aria-hidden="true"></i> Case Study';
+      card.querySelector('.project-links')?.appendChild(button);
+    }
+    button.addEventListener('click', () => {
+      const number = card.querySelector('.project-tag-num')?.textContent.trim() || 'PROJECT';
+      const title = card.querySelector('.project-title')?.textContent.trim() || 'Project';
+      const description = card.querySelector('.project-desc')?.textContent.trim() || '';
+      const roleLine = [...card.querySelectorAll('div')].find(el => el.textContent.trim().startsWith('Role:'));
+      const technologies = [...card.querySelectorAll('.project-tech-badge')]
+        .map(el => el.textContent.trim()).filter(value => value !== 'Completed');
+      document.getElementById('caseStudyNumber').textContent = number;
+      document.getElementById('caseStudyTitle').textContent = title;
+      const body = document.getElementById('caseStudyBody');
+      body.replaceChildren();
+      const addSection = (heading, content) => {
+        const section = document.createElement('section');
+        const h3 = document.createElement('h3');
+        const p = document.createElement('p');
+        h3.textContent = heading;
+        p.textContent = content;
+        section.append(h3, p);
+        body.appendChild(section);
+      };
+      addSection('Overview', description);
+      addSection('Purpose', description);
+      if (roleLine) addSection('My Role', roleLine.textContent.trim().replace('Role:', '').trim());
+      addSection('Technologies', technologies.join(' • '));
+      caseStudyModal?.showModal();
+    });
+  });
+  caseStudyClose?.addEventListener('click', () => caseStudyModal.close());
+  caseStudyModal?.addEventListener('click', event => { if (event.target === caseStudyModal) caseStudyModal.close(); });
 
   // --------------------------------------------------------------------------
   // 6. Back To Top Action
@@ -272,25 +339,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const result = await response.json();
 
-        if (result.status === 'success') {
-          formStatus.innerHTML = `<div style="padding:1rem; background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#10b981; border-radius:8px; margin-top:1rem;">
-            <i class="fas fa-check-circle"></i> ${result.message}
-          </div>`;
+        if (response.ok && result.status === 'success') {
+          formStatus.className = 'form-status success';
+          formStatus.textContent = result.message;
           contactForm.reset();
         } else {
-          formStatus.innerHTML = `<div style="padding:1rem; background:rgba(239,68,68,0.15); border:1px solid #ef4444; color:#ef4444; border-radius:8px; margin-top:1rem;">
-            <i class="fas fa-exclamation-circle"></i> ${result.message || 'Error sending message.'}
-          </div>`;
+          formStatus.className = 'form-status error';
+          formStatus.textContent = result.message || 'Error sending message.';
         }
       } catch (err) {
-        formStatus.innerHTML = `<div style="padding:1rem; background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#10b981; border-radius:8px; margin-top:1rem;">
-          <i class="fas fa-check-circle"></i> Message submitted successfully! Thank you for reaching out, Dominic will get back to you soon.
-        </div>`;
-        contactForm.reset();
+        formStatus.className = 'form-status error';
+        formStatus.textContent = 'Your message could not be sent. Please email apopod14@gmail.com directly.';
       } finally {
         submitBtn.innerHTML = originalBtnText;
         submitBtn.disabled = false;
       }
+    });
+  }
   // --------------------------------------------------------------------------
   // 8. GitHub Dynamic Integration API Engine (@dominicapopo)
   // --------------------------------------------------------------------------
@@ -373,13 +438,18 @@ function createRepositoryCard(repo) {
   const card = document.createElement('div');
   card.className = 'repo-card';
 
-  const name = repo.name || 'Untitled Repository';
-  const description = repo.description || 'Public GitHub repository by Dominic Traves Apopo.';
-  const language = repo.language || 'Web / Code';
+  const escapeHTML = value => String(value).replace(/[&<>"']/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[character]));
+  const name = escapeHTML(repo.name || 'Untitled Repository');
+  const description = escapeHTML(repo.description || 'Public GitHub repository by Dominic Traves Apopo.');
+  const language = escapeHTML(repo.language || 'Web / Code');
   const stars = repo.stargazers_count !== undefined ? repo.stargazers_count : 0;
   const forks = repo.forks_count !== undefined ? repo.forks_count : 0;
-  const updatedDate = formatRelativeDate(repo.updated_at);
-  const repoUrl = repo.html_url || 'https://github.com/dominicapopo';
+  const updatedDate = escapeHTML(formatRelativeDate(repo.updated_at));
+  const repoUrl = typeof repo.html_url === 'string' && repo.html_url.startsWith('https://github.com/dominicapopo')
+    ? escapeHTML(repo.html_url)
+    : 'https://github.com/dominicapopo';
 
   card.innerHTML = `
     <div>

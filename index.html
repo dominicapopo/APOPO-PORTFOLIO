@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dominic Traves Apopo | Full-Stack Developer & Tech Enthusiast</title>
   <meta name="description" content="Personal Portfolio of Dominic Traves Apopo — Full-Stack Developer, Technology Enthusiast, and Future Cybersecurity & Data Professional based in Kenya.">
+  <meta name="theme-color" content="#080b12">
+  <meta property="og:title" content="Dominic Traves Apopo | Full-Stack Developer">
+  <meta property="og:description" content="Developer portfolio focused on practical web, cybersecurity, networking, Python, data and IT solutions.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero_portrait.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dominic Traves Apopo | Full-Stack Developer">
+  <meta name="twitter:description" content="Building practical digital solutions across web development, IT, cybersecurity, networking, Python and data.">
+  <script>document.documentElement.dataset.theme=localStorage.getItem('portfolio-theme')||'dark';</script>
   
   <!-- FontAwesome Icons & Google Fonts (Space Grotesk, Inter, JetBrains Mono) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,20 +23,21 @@
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <!-- Custom Interactive Mouse Cursor Followers -->
   <div class="cursor-dot" id="cursorDot"></div>
   <div class="cursor-follower" id="cursorFollower"></div>
 
   <!-- Sticky Navbar Header -->
-  <nav class="navbar" id="navbar">
+  <nav class="navbar" id="navbar" aria-label="Primary navigation">
     <div class="container nav-container">
       <a href="#hero" class="nav-logo">
         <div class="nav-logo-icon">D</div>
         <span>DOMINIC <span class="gradient-text">APOPO</span></span>
       </a>
 
-      <ul class="nav-links" id="navLinks">
+      <ul class="nav-links" id="navLinks" aria-label="Portfolio sections">
         <li><a href="#hero" class="nav-link active">Home</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
         <li><a href="#services" class="nav-link">What I Do</a></li>
@@ -40,8 +50,11 @@
       </ul>
 
       <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme" title="Change color theme">
+          <i class="fas fa-sun" aria-hidden="true"></i>
+        </button>
         <a href="#contact" class="btn btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.88rem;">Let's Talk</a>
-        <button class="burger-menu" id="burgerMenu" aria-label="Toggle navigation menu">
+        <button class="burger-menu" id="burgerMenu" type="button" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
           <i class="fas fa-bars"></i>
         </button>
       </div>
@@ -49,6 +62,7 @@
   </nav>
 
   <!-- 1. Hero Section -->
+  <main id="main-content">
   <section class="hero-section" id="hero">
     <div class="container">
       <div class="hero-grid">
@@ -57,7 +71,8 @@
             <span class="hero-badge-dot"></span>
             Available for Projects & Collaboration
           </div>
-          <h1 class="hero-title">Hi, I'm <span class="gradient-text">Dominic Traves Apopo</span>.</h1>
+          <p class="hero-intro">Hi, I'm <strong>Dominic Traves Apopo</strong>.</p>
+          <h1 class="hero-title">I Build Digital Solutions That <span class="gradient-text">Solve Real Problems.</span></h1>
           
           <div class="hero-role-subtitle">
             Full-Stack Developer • Technology Enthusiast • Future Cybersecurity & Data Professional
@@ -89,7 +104,7 @@
           <div class="hero-portrait-card">
             <div class="hero-portrait-glow"></div>
             <div class="hero-portrait-img-container">
-              <img src="assets/images/hero_portrait.png" alt="Dominic Traves Apopo" class="hero-portrait-img">
+              <img src="assets/images/hero_portrait.png" alt="Portrait of Dominic Traves Apopo" class="hero-portrait-img" width="720" height="720" fetchpriority="high" decoding="async">
             </div>
             <div class="hero-portrait-footer">
               <div class="hero-portrait-name">
@@ -504,7 +519,7 @@
         <!-- Project 01 -->
         <div class="project-card">
           <div class="project-img-wrap">
-            <img src="assets/images/personal_portfolio_preview.jpg" alt="Project 01 — Personal Developer Portfolio" class="project-img">
+            <img src="assets/images/personal_portfolio_preview.jpg" alt="Preview of Dominic's personal developer portfolio" class="project-img" loading="lazy" decoding="async">
           </div>
           <div class="project-content">
             <span class="project-tag-num">PROJECT 01</span>
@@ -526,7 +541,7 @@
         <!-- Project 02 -->
         <div class="project-card">
           <div class="project-img-wrap">
-            <img src="assets/images/dota_website_preview.jpg" alt="Project 02 — DOTA Group Limited Corporate Website" class="project-img">
+            <img src="assets/images/dota_website_preview.jpg" alt="Preview of the DOTA Group Limited corporate website" class="project-img" loading="lazy" decoding="async">
           </div>
           <div class="project-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
@@ -550,9 +565,7 @@
               <span class="project-tech-badge">Responsive Design</span>
             </div>
             <div class="project-links">
-              <a href="DOTA_LIVE_URL" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding:0.4rem 1rem; font-size:0.85rem;">
-                <i class="fas fa-globe"></i> Live Website &rarr;
-              </a>
+              <button type="button" class="btn btn-primary case-study-btn" style="padding:0.4rem 1rem; font-size:0.85rem;"><i class="fas fa-layer-group"></i> View Case Study</button>
             </div>
           </div>
         </div>
@@ -560,7 +573,7 @@
         <!-- Project 03 -->
         <div class="project-card">
           <div class="project-img-wrap">
-            <img src="assets/images/business_website_preview.jpg" alt="Project 03 — Business Website Concept" class="project-img">
+            <img src="assets/images/business_website_preview.jpg" alt="Preview of a business website concept" class="project-img" loading="lazy" decoding="async">
           </div>
           <div class="project-content">
             <span class="project-tag-num">PROJECT 03</span>
@@ -582,7 +595,7 @@
         <!-- Project 04 -->
         <div class="project-card">
           <div class="project-img-wrap">
-            <img src="assets/images/digital_solution_preview.jpg" alt="Project 04 — Business Management / Digital Solution" class="project-img">
+            <img src="assets/images/digital_solution_preview.jpg" alt="Preview of a business management digital solution" class="project-img" loading="lazy" decoding="async">
           </div>
           <div class="project-content">
             <span class="project-tag-num">PROJECT 04</span>
@@ -604,7 +617,7 @@
         <!-- Project 05 -->
         <div class="project-card">
           <div class="project-img-wrap">
-            <img src="assets/images/python_projects_preview.jpg" alt="Project 05 — Python Automation & Security Suite" class="project-img">
+            <img src="assets/images/python_projects_preview.jpg" alt="Preview of Python automation and security projects" class="project-img" loading="lazy" decoding="async">
           </div>
           <div class="project-content">
             <span class="project-tag-num">PROJECT 05</span>
@@ -733,7 +746,7 @@
       <div class="section-tag">
         <i class="fas fa-graduation-cap"></i> Academics & Credentials
       </div>
-      <h2 class="section-title">Education & <span class="gradient-text">Learning Pathway</span></h2>
+      <h2 class="section-title">Education & <span class="gradient-text">Professional Development</span></h2>
       
       <div class="edu-grid">
         
@@ -954,25 +967,25 @@
         <div class="glass-card">
           <h3 style="font-size:1.5rem; margin-bottom:1.5rem;">Send a Message</h3>
           
-          <form class="contact-form" id="contactForm">
+          <form class="contact-form" id="contactForm" action="send_message.php" method="post">
             <div class="form-group">
               <label for="name">Your Name</label>
-              <input type="text" id="name" name="name" class="form-input" placeholder="e.g. Alex Morgan" required>
+              <input type="text" id="name" name="name" class="form-input" placeholder="e.g. Alex Morgan" autocomplete="name" minlength="2" maxlength="80" required>
             </div>
 
             <div class="form-group">
               <label for="email">Email Address</label>
-              <input type="email" id="email" name="email" class="form-input" placeholder="e.g. alex@example.com" required>
+              <input type="email" id="email" name="email" class="form-input" placeholder="e.g. alex@example.com" autocomplete="email" maxlength="160" required>
             </div>
 
             <div class="form-group">
               <label for="subject">Subject</label>
-              <input type="text" id="subject" name="subject" class="form-input" placeholder="Project Inquiry / Collaboration">
+              <input type="text" id="subject" name="subject" class="form-input" placeholder="Project Inquiry / Collaboration" maxlength="120">
             </div>
 
             <div class="form-group">
               <label for="message">Message</label>
-              <textarea id="message" name="message" class="form-textarea" placeholder="Tell me about your project or inquiry..." required></textarea>
+              <textarea id="message" name="message" class="form-textarea" placeholder="Tell me about your project or inquiry..." minlength="10" maxlength="3000" required></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary" style="width:100%;">
@@ -980,12 +993,20 @@
             </button>
           </form>
 
-          <div id="formStatus"></div>
+          <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
         </div>
 
       </div>
     </div>
   </section>
+  </main>
+
+  <dialog class="case-study-modal" id="caseStudyModal" aria-labelledby="caseStudyTitle">
+    <button class="modal-close" id="modalClose" type="button" aria-label="Close case study"><i class="fas fa-times" aria-hidden="true"></i></button>
+    <span class="project-tag-num" id="caseStudyNumber"></span>
+    <h2 id="caseStudyTitle"></h2>
+    <div class="case-study-body" id="caseStudyBody"></div>
+  </dialog>
 
   <!-- 16. Footer -->
   <footer class="footer">
